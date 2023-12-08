@@ -61,7 +61,7 @@ const sendMessageToFbUser = async(currentLowestPrice) => {
     console.log(`SendMessageToFbUser`, getUpdates.data);
 }
 const checkIntervalMinute = CHECK_INTERVAL || 3;
-cron.schedule(`${checkIntervalMinute} * * * *`, () => {
+cron.schedule(`* * * * *`, () => {
     try {
         currentP2Pprices();
     } catch (error) {
