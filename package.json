@@ -1,0 +1,24 @@
+{
+  "name": "binance-automation-tasks",
+  "version": "1.0.0",
+  "description": "Automate Binance P2P pricing alert",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js",
+    "runDev": "NODE_ENV=development node app.js",
+    "restart": "pm2 reload all"
+  },
+  "author": "Mahbub Rahman",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.23.0",
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.4",
+    "dotenv": "^5.0.1",
+    "express": "^4.16.3",
+    "express-async-handler": "^1.1.4",
+    "mysql": "^2.16.0",
+    "node-cron": "^3.0.3"
+  }
+}
