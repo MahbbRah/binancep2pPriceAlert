@@ -11,6 +11,25 @@ const {
 } = process.env;
 const MIN_PRICE = parseFloat(MINIMUM_PRICE);
 
+
+const performTask = (result) => {
+    // Calculate interval period based on the result value
+    let intervalPeriod;
+    const basePrice = 1.008;
+    if (result >= basePrice && result <= 1.025) {
+        intervalPeriod = (result - basePrice) * 20000; // 20 seconds base interval
+    } else {
+        console.error('Invalid result value. It should be between 1.011 and 1.025.');
+        return;
+    }
+    console.log(`set the task again after ss`, intervalPeriod);
+    // Schedule the execution of another function after the calculated interval
+    setTimeout(() => {
+        // Call the other function here
+        currentP2Pprices();
+    }, intervalPeriod);
+}
+
 const currentP2Pprices = async() => {
     const reqUri = `https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search`;
     const payload = {
@@ -36,6 +55,7 @@ const currentP2Pprices = async() => {
         await sendMessageToFbUser(getmarketPrices)
     }
     console.log('marketPrices:', getmarketPrices); // price example: 1.015
+    performTask(firstPrice);
 }
 
 const sendMessageToFbUser = async(currentLowestPrice) => {
@@ -60,11 +80,11 @@ const sendMessageToFbUser = async(currentLowestPrice) => {
     const getUpdates =  await axios.post(reqUri, payload, { headers });
     console.log(`SendMessageToFbUser`, getUpdates.data);
 }
-const checkIntervalMinute = CHECK_INTERVAL || 3;
-cron.schedule(`*/20 * * * * *`, () => {
-    try {
-        currentP2Pprices();
-    } catch (error) {
-        console.log(`error from scheduled`, error);
-    }
-});
+
+// const checkIntervalMinute = CHECK_INTERVAL || 3;
+// cron.schedule(`*/20 * * * * *`, currentP2Pprices);
+try {
+    currentP2Pprices();
+} catch (error) {
+    console.log(`err checkingPrices`, error);
+}
