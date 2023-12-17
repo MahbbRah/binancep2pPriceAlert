@@ -23,7 +23,7 @@ const performTask = (result) => {
         console.error('Invalid result value. It should be between 1.011 and 1.025.');
         return;
     }
-    console.log(`set the task again after %s minutes`, msToMinutesConverter(intervalPeriod));
+    console.log(`Checking updates again after %s minutes`, msToMinutesConverter(intervalPeriod));
     // Schedule the execution of another function after the calculated interval
     setTimeout(() => {
         // Call the other function here
