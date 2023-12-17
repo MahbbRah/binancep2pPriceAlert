@@ -11,11 +11,10 @@ const {
 const MIN_PRICE = parseFloat(MINIMUM_PRICE);
 
 const msToMinutesConverter = (ms) => parseFloat(ms / 1000 / 60).toFixed(2);
-
+const basePrice = 1.010;
 const performTask = (result) => {
     // Calculate interval period based on the result value
     let intervalPeriod;
-    const basePrice = 1.008;
     if (result >= basePrice && result <= 1.025) {
         intervalPeriod = (result - basePrice) * 20000; // 20 seconds base interval
         intervalPeriod = parseInt(intervalPeriod * 1000) //convert the second into milisecond and parse as int
