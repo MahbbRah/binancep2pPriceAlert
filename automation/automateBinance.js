@@ -16,7 +16,7 @@ const performTask = (result) => {
     // Calculate interval period based on the result value
     let intervalPeriod;
     if (result >= basePrice && result <= 1.025) {
-        intervalPeriod = (result - basePrice) * 20000; // 20 seconds base interval
+        intervalPeriod = (result - basePrice) * 12000; // 20 seconds base interval
         intervalPeriod = parseInt(intervalPeriod * 1000) //convert the second into milisecond and parse as int
     } else {
         console.error('Invalid result value. It should be between 1.011 and 1.025.');
