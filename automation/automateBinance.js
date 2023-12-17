@@ -1,5 +1,4 @@
 require('dotenv').config();
-const cron = require('node-cron');
 const axios = require("axios").default;
 
 const { 
@@ -11,6 +10,7 @@ const {
 } = process.env;
 const MIN_PRICE = parseFloat(MINIMUM_PRICE);
 
+const msToMinutesConverter = (ms) => parseFloat(ms / 1000 / 60).toFixed(2);
 
 const performTask = (result) => {
     // Calculate interval period based on the result value
@@ -23,7 +23,7 @@ const performTask = (result) => {
         console.error('Invalid result value. It should be between 1.011 and 1.025.');
         return;
     }
-    console.log(`set the task again after ss`, intervalPeriod);
+    console.log(`set the task again after %s minutes`, msToMinutesConverter(intervalPeriod));
     // Schedule the execution of another function after the calculated interval
     setTimeout(() => {
         // Call the other function here
