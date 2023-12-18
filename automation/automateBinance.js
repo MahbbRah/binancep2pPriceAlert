@@ -6,7 +6,8 @@ const {
     PSID, 
     PAGE_ID, 
     CHECK_INTERVAL, 
-    ACCESS_TOKEN 
+    ACCESS_TOKEN,
+    GRAPH_VERSION
 } = process.env;
 const MIN_PRICE = parseFloat(MINIMUM_PRICE);
 
@@ -52,7 +53,11 @@ const currentP2Pprices = async() => {
     getmarketPrices = getmarketPrices.join(',');
     // if minimum price is higher or equal to first price
     if (MIN_PRICE >= firstPrice) {
-        await sendMessageToFbUser(getmarketPrices)
+        try {
+            await sendMessageToFbUser(getmarketPrices)
+        } catch (error) {
+            console.log(`err sending message`, error)
+        }
     }
     console.log('marketPrices:', getmarketPrices); // price example: 1.015
     performTask(firstPrice);
