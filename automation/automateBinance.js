@@ -13,6 +13,7 @@ const MIN_PRICE = parseFloat(MINIMUM_PRICE);
 
 const msToMinutesConverter = (ms) => parseFloat(ms / 1000 / 60).toFixed(2);
 const basePrice = 1.010;
+let previousPriceTick;
 const performTask = (result) => {
     // Calculate interval period based on the result value; and set a default one as 20s
     let intervalPeriod = 20000;
@@ -55,11 +56,17 @@ const currentP2Pprices = async() => {
     // if minimum price is higher or equal to first price
     if (MIN_PRICE >= firstPrice) {
         try {
-            await sendMessageToFbUser(getmarketPrices)
+            if(firstPrice !== previousPriceTick) {
+                await sendMessageToFbUser(getmarketPrices)
+            } else {
+                console.log(`skipped sending messenger as the price didn't change`);
+            }
+            
         } catch (error) {
             console.log(`err sending message`, error)
         }
     }
+    previousPriceTick = firstPrice;
     console.log('marketPrices:', getmarketPrices); // price example: 1.015
     performTask(firstPrice);
 }
