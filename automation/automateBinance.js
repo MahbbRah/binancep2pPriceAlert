@@ -5,7 +5,7 @@ const {
     MINIMUM_PRICE, 
     PSID, 
     PAGE_ID, 
-    CHECK_INTERVAL, 
+    // CHECK_INTERVAL, 
     ACCESS_TOKEN,
     GRAPH_VERSION
 } = process.env;
@@ -69,7 +69,8 @@ const sendMessageToFbUser = async(currentLowestPrice) => {
     
     const messageBody = `Lowest price for first 3 advertisers: ${currentLowestPrice}`;
     const payload = {
-        "messaging_type": "RESPONSE",
+        "messaging_type": "MESSAGE_TAG",
+        "tag": "ACCOUNT_UPDATE",
         "recipient": {
             "id": PSID
         },
@@ -90,7 +91,7 @@ const sendMessageToFbUser = async(currentLowestPrice) => {
 // const checkIntervalMinute = CHECK_INTERVAL || 3;
 // cron.schedule(`*/20 * * * * *`, currentP2Pprices);
 try {
-    currentP2Pprices();
+    // currentP2Pprices();
 } catch (error) {
     console.log(`err checkingPrices`, error);
 }
