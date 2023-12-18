@@ -49,8 +49,8 @@ const currentP2Pprices = async() => {
     }
     const getUpdates =  await axios.post(reqUri, payload);
     let getmarketPrices = getUpdates.data.data.map(item => item.adv.price);
-    // const firstPrice = parseFloat(getmarketPrices[0]);
-    const firstPrice = MIN_PRICE;
+    const firstPrice = parseFloat(getmarketPrices[0]);
+    // const firstPrice = MIN_PRICE;
     getmarketPrices = getmarketPrices.join(',');
     // if minimum price is higher or equal to first price
     if (MIN_PRICE >= firstPrice) {
