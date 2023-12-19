@@ -39,7 +39,7 @@ const currentP2Pprices = async() => {
         "page": 1,
         "rows": 3,
         "payTypes": [
-            "Wise"
+            "BANK"
         ],
         "countries": [],
         "publisherType": "merchant",
