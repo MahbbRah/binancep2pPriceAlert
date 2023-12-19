@@ -49,7 +49,11 @@ const currentP2Pprices = async() => {
         "merchantCheck": true
     }
     const getUpdates =  await axios.post(reqUri, payload);
-    console.log(`raw responses`, getUpdates.data);
+    if (!getUpdates.data.data.length) {
+        console.log(`No listing available at this moment`);
+        performTask(1.035); // just added a dummy price to make the system running with scheduler, know this i not the right fix
+        return;
+    }
     let getmarketPrices = getUpdates.data.data.map(item => item.adv.price);
     const firstPrice = parseFloat(getmarketPrices[0]);
     // const firstPrice = MIN_PRICE;
