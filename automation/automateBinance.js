@@ -55,12 +55,12 @@ const currentP2Pprices = async() => {
     // if minimum price is higher or equal to first price
     if (MIN_PRICE >= firstPrice) {
         try {
-            if(firstPrice !== previousPriceTick) {
-                await sendMessageToFbUser(getmarketPrices)
-            } else {
-                console.log(`skipped sending messenger as the price didn't change`);
-            }
-            
+            // if(firstPrice !== previousPriceTick) {
+            //     await sendMessageToFbUser(getmarketPrices)
+            // } else {
+            //     console.log(`skipped sending messenger as the price didn't change`);
+            // }
+            await sendMessageToFbUser(getmarketPrices)
         } catch (error) {
             console.log(`err sending message`, error)
         }
