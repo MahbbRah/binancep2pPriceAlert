@@ -21,7 +21,7 @@ const performTask = (result) => {
         intervalPeriod = (result - basePrice) * 12000; // 20 seconds base interval
         intervalPeriod = parseInt(intervalPeriod * 1000) //convert the second into milisecond and parse as int
     } else {
-        console.error('Invalid result value. It should be between 1.011 and 1.025.');
+        console.error('Invalid result value. It should be between 1.011 and 1.035.');
         // return;
     }
     console.log(`Checking updates again after %s minutes`, msToMinutesConverter(intervalPeriod));
@@ -60,23 +60,23 @@ const currentP2Pprices = async() => {
     getmarketPrices = getmarketPrices.join(',');
     // if minimum price is higher or equal to first price
     if (MIN_PRICE >= firstPrice) {
-        try {
-            if(firstPrice !== previousPriceTick) {
-                await sendMessageToFbUser(getmarketPrices)
-            } else {
-                console.log(`skipped sending messenger as the price didn't change`);
+        if(firstPrice !== previousPriceTick) {
+            const psidUsers = JSON.parse(PSID);
+            for (let index = 0; index < psidUsers.length; index++) {
+                const psidUserId = psidUsers[index];
+                await sendMessageToFbUser(getmarketPrices, psidUserId)
             }
-            
-        } catch (error) {
-            console.log(`err sending message`, error)
+        } else {
+            console.log(`skipped sending messenger as the price didn't change`);
         }
+            
     }
     previousPriceTick = firstPrice;
     console.log('marketPrices:', getmarketPrices); // price example: 1.015
     performTask(firstPrice);
 }
 
-const sendMessageToFbUser = async(currentLowestPrice) => {
+const sendMessageToFbUser = async(currentLowestPrice, userID) => {
     const reqUri = `https://graph.facebook.com/${GRAPH_VERSION}/${PAGE_ID}/messages`;
     
     const messageBody = `Lowest price for first 3 advertisers: ${currentLowestPrice}`;
@@ -84,7 +84,7 @@ const sendMessageToFbUser = async(currentLowestPrice) => {
         "messaging_type": "MESSAGE_TAG",
         "tag": "ACCOUNT_UPDATE",
         "recipient": {
-            "id": PSID
+            "id": userID
         },
         "message": {
             "text": messageBody
@@ -96,14 +96,23 @@ const sendMessageToFbUser = async(currentLowestPrice) => {
         'Authorization': `Bearer ${ACCESS_TOKEN}`
     }
 
-    const getUpdates =  await axios.post(reqUri, payload, { headers });
-    console.log(`SendMessageToFbUser`, getUpdates.data);
+    try {
+        const getUpdates = await axios.post(reqUri, payload, { headers });
+        console.log(`sentMessageResponse`, getUpdates.data);
+    } catch (error) {
+        console.log(`error sending message`, error.response.data);
+    }
 }
 
 // const checkIntervalMinute = CHECK_INTERVAL || 3;
 // cron.schedule(`*/20 * * * * *`, currentP2Pprices);
 try {
     currentP2Pprices();
+    // const psidUsers = JSON.parse(PSID);
+    // for (let index = 0; index < psidUsers.length; index++) {
+    //     const psidUserId = psidUsers[index];
+    //     sendMessageToFbUser(MIN_PRICE, psidUserId)
+    // }
 } catch (error) {
     console.log(`err checkingPrices`, error);
 }
