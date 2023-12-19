@@ -17,7 +17,7 @@ let previousPriceTick;
 const performTask = (result) => {
     // Calculate interval period based on the result value; and set a default one as 20s
     let intervalPeriod = 20000;
-    if (result >= basePrice) {
+    if (result >= basePrice && result <= 1.035) {
         
     } else {
         console.error('Invalid result value. It should be between 1.011 and 1.025.');
