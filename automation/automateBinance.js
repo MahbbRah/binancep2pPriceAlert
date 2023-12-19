@@ -18,7 +18,8 @@ const performTask = (result) => {
     // Calculate interval period based on the result value; and set a default one as 20s
     let intervalPeriod = 20000;
     if (result >= basePrice && result <= 1.035) {
-        
+        intervalPeriod = (result - basePrice) * 12000; // 20 seconds base interval
+        intervalPeriod = parseInt(intervalPeriod * 1000) //convert the second into milisecond and parse as int
     } else {
         console.error('Invalid result value. It should be between 1.011 and 1.025.');
         // return;
@@ -48,6 +49,7 @@ const currentP2Pprices = async() => {
         "merchantCheck": true
     }
     const getUpdates =  await axios.post(reqUri, payload);
+    console.log(`raw responses`, getUpdates.data);
     let getmarketPrices = getUpdates.data.data.map(item => item.adv.price);
     const firstPrice = parseFloat(getmarketPrices[0]);
     // const firstPrice = MIN_PRICE;
@@ -55,12 +57,12 @@ const currentP2Pprices = async() => {
     // if minimum price is higher or equal to first price
     if (MIN_PRICE >= firstPrice) {
         try {
-            // if(firstPrice !== previousPriceTick) {
-            //     await sendMessageToFbUser(getmarketPrices)
-            // } else {
-            //     console.log(`skipped sending messenger as the price didn't change`);
-            // }
-            await sendMessageToFbUser(getmarketPrices)
+            if(firstPrice !== previousPriceTick) {
+                await sendMessageToFbUser(getmarketPrices)
+            } else {
+                console.log(`skipped sending messenger as the price didn't change`);
+            }
+            
         } catch (error) {
             console.log(`err sending message`, error)
         }
