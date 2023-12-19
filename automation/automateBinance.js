@@ -17,13 +17,8 @@ let previousPriceTick;
 const performTask = (result) => {
     // Calculate interval period based on the result value; and set a default one as 20s
     let intervalPeriod = 20000;
-    if (result >= basePrice && result <= 1.025) {
-        intervalPeriod = (result - basePrice) * 12000; // 20 seconds base interval
-        intervalPeriod = parseInt(intervalPeriod * 1000) //convert the second into milisecond and parse as int
-    } else {
-        console.error('Invalid result value. It should be between 1.011 and 1.025.');
-        return;
-    }
+    intervalPeriod = (result - basePrice) * 12000; // 20 seconds base interval
+    intervalPeriod = parseInt(intervalPeriod * 1000) //convert the second into milisecond and parse as int
     console.log(`Checking updates again after %s minutes`, msToMinutesConverter(intervalPeriod));
     // Schedule the execution of another function after the calculated interval
     setTimeout(() => {
