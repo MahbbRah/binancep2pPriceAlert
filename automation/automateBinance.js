@@ -117,4 +117,10 @@ try {
     // }
 } catch (error) {
     console.log(`err checkingPrices`, error);
+    // if error something then retry from here with a timeout
+    const retryAfter = 90000;
+    console.log(`Retrying after %s`, retryAfter);
+    setTimeout(() => {
+        currentP2Pprices();
+    }, retryAfter);
 }
