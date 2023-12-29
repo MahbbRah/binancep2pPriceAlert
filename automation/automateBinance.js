@@ -12,19 +12,21 @@ const {
 const MIN_PRICE = parseFloat(MINIMUM_PRICE);
 
 const msToMinutesConverter = (ms) => parseFloat(ms / 1000 / 60).toFixed(2);
+const isNegative = (num) => {
+    if (Math.sign(num) === -1) {
+        return true;
+    }
+    return false;
+}
 const basePrice = 1.010;
 let previousPriceTick;
 const performTask = (result) => {
     // Calculate interval period based on the result value; and set a default one as 20s
     let intervalPeriod = (result - basePrice) * 12000; // 20 seconds base interval
     intervalPeriod = parseInt(intervalPeriod * 1000) //convert the second into milisecond and parse as int
-    // let intervalPeriod = 20000;
-    // if (result >= basePrice && result <= 1.035) {
-        
-    // } else {
-    //     console.error('Invalid result value. It should be between 1.011 and 1.035.');
-    //     // return;
-    // }
+    
+    // if the intervalPeriod is negative then set a default interval; default 20s
+    if(isNegative(intervalPeriod)) intervalPeriod = 20000;
     
     console.log(`Checking updates again after %s minutes`, msToMinutesConverter(intervalPeriod));
     // Schedule the execution of another function after the calculated interval
