@@ -63,7 +63,7 @@ const currentP2Pprices = async() => {
     // const firstPrice = MIN_PRICE;
     getmarketPrices = getmarketPrices.join(',');
     // if minimum price is higher or equal to first price
-    if (MIN_PRICE >= firstPrice) {
+    if (MIN_PRICE >= firstPrice && firstPrice >= 1.008) {
         if(firstPrice !== previousPriceTick) {
             const psidUsers = JSON.parse(PSID);
             for (let index = 0; index < psidUsers.length; index++) {
