@@ -111,7 +111,7 @@ const sendMessageToFbUser = async(currentLowestPrice, userID) => {
 // const checkIntervalMinute = CHECK_INTERVAL || 3;
 // cron.schedule(`*/20 * * * * *`, currentP2Pprices);
 try {
-    currentP2Pprices();
+    // currentP2Pprices();
     const psidUsers = JSON.parse(PSID);
     for (let index = 0; index < psidUsers.length; index++) {
         const psidUserId = psidUsers[index];
@@ -122,7 +122,7 @@ try {
     // if error something then retry from here with a timeout
     const retryAfter = 90000;
     console.log(`Retrying after %s`, retryAfter);
-    setTimeout(() => {
-        currentP2Pprices();
-    }, retryAfter);
+    // setTimeout(() => {
+    //     currentP2Pprices();
+    // }, retryAfter);
 }
