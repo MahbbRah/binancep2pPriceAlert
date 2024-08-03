@@ -112,11 +112,11 @@ const sendMessageToFbUser = async(currentLowestPrice, userID) => {
 // cron.schedule(`*/20 * * * * *`, currentP2Pprices);
 try {
     currentP2Pprices();
-    // const psidUsers = JSON.parse(PSID);
-    // for (let index = 0; index < psidUsers.length; index++) {
-    //     const psidUserId = psidUsers[index];
-    //     sendMessageToFbUser(MIN_PRICE, psidUserId)
-    // }
+    const psidUsers = JSON.parse(PSID);
+    for (let index = 0; index < psidUsers.length; index++) {
+        const psidUserId = psidUsers[index];
+        sendMessageToFbUser(MIN_PRICE, psidUserId)
+    }
 } catch (error) {
     console.log(`err checkingPrices`, error);
     // if error something then retry from here with a timeout
