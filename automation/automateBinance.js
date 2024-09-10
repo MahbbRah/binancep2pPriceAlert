@@ -1,5 +1,7 @@
 require('dotenv').config();
 const axios = require("axios").default;
+const TelegramBot = require('node-telegram-bot-api');
+
 
 const { 
     MINIMUM_PRICE, 
@@ -7,9 +9,24 @@ const {
     PAGE_ID, 
     // CHECK_INTERVAL, 
     ACCESS_TOKEN,
+    TG_AUTH_TOKEN,
+    TG_CHAT_ID,
     GRAPH_VERSION
 } = process.env;
 const MIN_PRICE = parseFloat(MINIMUM_PRICE);
+
+const bot = new TelegramBot(TG_AUTH_TOKEN, { polling: false });
+
+function forwardToBot(message) {
+    bot.sendMessage(TG_CHAT_ID, message)
+        .then(() => {
+            console.log('Notification sent successfully');
+        })
+        .catch((error) => {
+            console.error('Error sending notification:', error);
+        });
+}
+
 
 const msToMinutesConverter = (ms) => parseFloat(ms / 1000 / 60).toFixed(2);
 const isNegative = (num) => {
@@ -18,7 +35,7 @@ const isNegative = (num) => {
     }
     return false;
 }
-const basePrice = 1.010;
+const basePrice = 1.005;
 let previousPriceTick;
 const performTask = (result) => {
     // Calculate interval period based on the result value; and set a default one as 20s
@@ -63,13 +80,18 @@ const currentP2Pprices = async() => {
     // const firstPrice = MIN_PRICE;
     getmarketPrices = getmarketPrices.join(',');
     // if minimum price is higher or equal to first price
-    if (MIN_PRICE >= firstPrice && firstPrice >= 1.008) {
+    if (MIN_PRICE >= firstPrice) {
+        // if(firstPrice !== previousPriceTick) {
+        //     const psidUsers = JSON.parse(PSID);
+        //     for (let index = 0; index < psidUsers.length; index++) {
+        //         const psidUserId = psidUsers[index];
+        //         await sendMessageToFbUser(getmarketPrices, psidUserId)
+        //     }
+        // } else {
+        //     console.log(`skipped sending messenger as the price didn't change`);
+        // }
         if(firstPrice !== previousPriceTick) {
-            const psidUsers = JSON.parse(PSID);
-            for (let index = 0; index < psidUsers.length; index++) {
-                const psidUserId = psidUsers[index];
-                await sendMessageToFbUser(getmarketPrices, psidUserId)
-            }
+            sendMessageToTgBot(getmarketPrices)
         } else {
             console.log(`skipped sending messenger as the price didn't change`);
         }
@@ -108,15 +130,26 @@ const sendMessageToFbUser = async(currentLowestPrice, userID) => {
     }
 }
 
+const sendMessageToTgBot = async(currentLowestPrice) => {
+    const messageBody = `Lowest price for first 3 advertisers: ${currentLowestPrice}`;
+    try {
+        forwardToBot(messageBody);
+    } catch (error) {
+        console.log(`error sending message`, error.response.data);
+    }
+}
+
 // const checkIntervalMinute = CHECK_INTERVAL || 3;
 // cron.schedule(`*/20 * * * * *`, currentP2Pprices);
 try {
-    // currentP2Pprices();
-    const psidUsers = JSON.parse(PSID);
-    for (let index = 0; index < psidUsers.length; index++) {
-        const psidUserId = psidUsers[index];
-        sendMessageToFbUser(MIN_PRICE, psidUserId)
-    }
+    currentP2Pprices();
+    // const psidUsers = JSON.parse(PSID);
+    // for (let index = 0; index < psidUsers.length; index++) {
+    //     const psidUserId = psidUsers[index];
+    //     sendMessageToFbUser(MIN_PRICE, psidUserId)
+    // }
+    // const messageText = `The latest price update is: 01.1001, He coolio..!`;
+    // sendMessageToTgBot(messageText);
 } catch (error) {
     console.log(`err checkingPrices`, error);
     // if error something then retry from here with a timeout
