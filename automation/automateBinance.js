@@ -69,8 +69,14 @@ const currentP2Pprices = async() => {
         "fiat": "USD",
         "merchantCheck": true
     }
-    const getUpdates =  await axios.post(reqUri, payload);
-    if (!getUpdates.data.data.length) {
+    let getUpdates = null;
+    try {
+        getUpdates = await axios.post(reqUri, payload); 
+    } catch (errOnGettingBinanceDetail) {
+        console.log(`errOnGettingBinanceDetail`, errOnGettingBinanceDetail.response.data);
+    }
+    
+    if (!getUpdates || !getUpdates.data.data.length) {
         console.log(`No listing available at this moment`);
         performTask(1.035); // just added a dummy price to make the system running with scheduler, know this i not the right fix
         return;
