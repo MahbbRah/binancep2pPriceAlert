@@ -73,7 +73,7 @@ const currentP2Pprices = async() => {
     try {
         getUpdates = await axios.post(reqUri, payload); 
     } catch (errOnGettingBinanceDetail) {
-        console.log(`errOnGettingBinanceDetail`, errOnGettingBinanceDetail.response.data);
+        console.log(`errOnGettingBinanceDetail`, errOnGettingBinanceDetail);
     }
     
     if (!getUpdates || !getUpdates.data.data.length) {
