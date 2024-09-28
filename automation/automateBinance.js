@@ -4,7 +4,8 @@ const TelegramBot = require('node-telegram-bot-api');
 
 
 const { 
-    MINIMUM_PRICE, 
+    MINIMUM_PRICE,
+    MIN_TRADE_AMOUNT,
     PSID, 
     PAGE_ID, 
     // CHECK_INTERVAL, 
@@ -71,18 +72,28 @@ const currentP2Pprices = async() => {
     }
     let getUpdates = null;
     try {
-        getUpdates = await axios.post(reqUri, payload); 
+        getUpdates = await axios.post(reqUri, payload);
+        getUpdates = getUpdates.data.data;
     } catch (errOnGettingBinanceDetail) {
         console.log(`errOnGettingBinanceDetail`, errOnGettingBinanceDetail);
     }
     
-    if (!getUpdates || !getUpdates.data.data.length) {
+    if (!getUpdates || !getUpdates.length) {
         console.log(`No listing available at this moment`);
         performTask(1.035); // just added a dummy price to make the system running with scheduler, know this i not the right fix
         return;
     }
-    let getmarketPrices = getUpdates.data.data.map(item => item.adv.price);
+    let getmarketPrices = getUpdates.map(item => item.adv.price);
     const firstPrice = parseFloat(getmarketPrices[0]);
+
+    // get min trade amount
+    const minTradeAmount = parseFloat(getUpdates[0].adv.minSingleTransAmount);
+    // skip sending msg and check again, if the first price is really small or so.
+    if(minTradeAmount < MIN_TRADE_AMOUNT) {
+        console.log(`price too small to send msg, current %s but target %s`, minTradeAmount, MIN_TRADE_AMOUNT)
+        performTask(firstPrice);
+        return;
+    }
     // const firstPrice = MIN_PRICE;
     getmarketPrices = getmarketPrices.join(',');
     // if minimum price is higher or equal to first price
