@@ -89,11 +89,11 @@ const currentP2Pprices = async() => {
     // get min trade amount
     const minTradeAmount = parseFloat(getUpdates[0].adv.minSingleTransAmount);
     // skip sending msg and check again, if the first price is really small or so.
-    if(minTradeAmount < MIN_TRADE_AMOUNT) {
-        console.log(`price too small to send msg, current %s but target %s`, minTradeAmount, MIN_TRADE_AMOUNT)
-        performTask(firstPrice);
-        return;
-    }
+    // if(minTradeAmount < MIN_TRADE_AMOUNT) {
+    //     console.log(`price too small to send msg, current %s but target %s`, minTradeAmount, MIN_TRADE_AMOUNT)
+    //     performTask(firstPrice);
+    //     return;
+    // }
     // const firstPrice = MIN_PRICE;
     getmarketPrices = getmarketPrices.join(',');
     // if minimum price is higher or equal to first price
