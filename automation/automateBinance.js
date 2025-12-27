@@ -95,6 +95,7 @@ const currentP2Pprices = async () => {
         performTask(firstPrice);
         return;
     }
+    console.log('check marketPrices', getmarketPrices);
     // const firstPrice = MIN_PRICE;
     getmarketPrices = getmarketPrices.join(',');
     // if minimum price is higher or equal to first price
