@@ -3,11 +3,11 @@ const axios = require("axios").default;
 const TelegramBot = require('node-telegram-bot-api');
 
 
-const { 
+const {
     MINIMUM_PRICE,
     MIN_TRADE_AMOUNT,
-    PSID, 
-    PAGE_ID, 
+    PSID,
+    PAGE_ID,
     // CHECK_INTERVAL, 
     ACCESS_TOKEN,
     TG_AUTH_TOKEN,
@@ -42,10 +42,10 @@ const performTask = (result) => {
     // Calculate interval period based on the result value; and set a default one as 20s
     let intervalPeriod = (result - basePrice) * 12000; // 20 seconds base interval
     intervalPeriod = parseInt(intervalPeriod * 1000) //convert the second into milisecond and parse as int
-    
+
     // if the intervalPeriod is negative then set a default interval; default 20s
-    if(isNegative(intervalPeriod)) intervalPeriod = 20000;
-    
+    if (isNegative(intervalPeriod)) intervalPeriod = 20000;
+
     console.log(`Checking updates again after %s minutes`, msToMinutesConverter(intervalPeriod));
     // Schedule the execution of another function after the calculated interval
     setTimeout(() => {
@@ -54,14 +54,15 @@ const performTask = (result) => {
     }, intervalPeriod);
 }
 
-const currentP2Pprices = async() => {
+const currentP2Pprices = async () => {
     const reqUri = `https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search`;
     const payload = {
         "proMerchantAds": false,
         "page": 1,
         "rows": 3,
         "payTypes": [
-            "BANK"
+            "BANK",
+            "Wise"
         ],
         "countries": [],
         "publisherType": "merchant",
@@ -77,7 +78,7 @@ const currentP2Pprices = async() => {
     } catch (errOnGettingBinanceDetail) {
         console.log(`errOnGettingBinanceDetail`, errOnGettingBinanceDetail);
     }
-    
+
     if (!getUpdates || !getUpdates.length) {
         console.log(`No listing available at this moment`);
         performTask(1.035); // just added a dummy price to make the system running with scheduler, know this i not the right fix
@@ -89,7 +90,7 @@ const currentP2Pprices = async() => {
     // get min trade amount
     const minTradeAmount = parseFloat(getUpdates[0].adv.minSingleTransAmount);
     // skip sending msg and check again, if the first price is really small or so.
-    if(minTradeAmount < MIN_TRADE_AMOUNT) {
+    if (minTradeAmount < MIN_TRADE_AMOUNT) {
         console.log(`price too small to send msg, current %s but target %s`, minTradeAmount, MIN_TRADE_AMOUNT)
         performTask(firstPrice);
         return;
@@ -107,21 +108,21 @@ const currentP2Pprices = async() => {
         // } else {
         //     console.log(`skipped sending messenger as the price didn't change`);
         // }
-        if(firstPrice !== previousPriceTick) {
+        if (firstPrice !== previousPriceTick) {
             sendMessageToTgBot(getmarketPrices)
         } else {
             console.log(`skipped sending messenger as the price didn't change`);
         }
-            
+
     }
     previousPriceTick = firstPrice;
     console.log('marketPrices:', getmarketPrices); // price example: 1.015
     performTask(firstPrice);
 }
 
-const sendMessageToFbUser = async(currentLowestPrice, userID) => {
+const sendMessageToFbUser = async (currentLowestPrice, userID) => {
     const reqUri = `https://graph.facebook.com/${GRAPH_VERSION}/${PAGE_ID}/messages`;
-    
+
     const messageBody = `Lowest price for first 3 advertisers: ${currentLowestPrice}`;
     const payload = {
         "messaging_type": "MESSAGE_TAG",
@@ -147,7 +148,7 @@ const sendMessageToFbUser = async(currentLowestPrice, userID) => {
     }
 }
 
-const sendMessageToTgBot = async(currentLowestPrice) => {
+const sendMessageToTgBot = async (currentLowestPrice) => {
     const messageBody = `Lowest price for first 3 advertisers: ${currentLowestPrice}`;
     try {
         forwardToBot(messageBody);
